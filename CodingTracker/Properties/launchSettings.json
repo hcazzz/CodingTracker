@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CodingTracker": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\szach\\source\\repos\\C# Projects\\CodingTracker"
+    }
+  }
+}
