@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace CodingTracker;
-internal class CodingTracker {
+public class CodingTracker {
 
     public int Id { get; set; }
 
@@ -16,6 +16,8 @@ internal class CodingTracker {
     public int codingMinutes { get; set; }
     public int codingSeconds { get; set; }
 
+
+    //violates srp so eventually condense this into its own class called CodingTimeCalculator
     public int CalculateHours(TimeSpan totalTime) {
         int totalHours = (int)totalTime.TotalHours;
 
@@ -38,6 +40,8 @@ internal class CodingTracker {
         var totalTime = endTime - startTime;
         return totalTime;
     }
+
+
+
+   
 }
-
-

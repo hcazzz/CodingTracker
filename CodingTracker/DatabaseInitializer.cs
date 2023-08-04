@@ -1,10 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace CodingTracker;
+public static class DatabaseInitializer {
+    public static void InitializeDatabase() {
+        // Get the database file path
+        var dbFilePath = Path.Combine(Directory.GetCurrentDirectory(), "coding-tracker.db");
 
-namespace CodingTracker {
-    internal class DatabaseInitializer {
+        // Check if the database file exists
+        bool databaseExists = File.Exists(dbFilePath);
+
+        // Create the context and ensure the database is created
+        using (var dbContext = new CodingTrackerContext()) {
+            if (!databaseExists) {
+                dbContext.Database.EnsureCreated();
+            }
+        }
     }
 }

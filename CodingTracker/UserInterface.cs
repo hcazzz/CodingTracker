@@ -1,10 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
+﻿using ConsoleTableExt;
+using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 using System.Globalization;
 using System.Transactions;
 
 namespace CodingTracker;
-public class UserInterface {
+internal class UserInterface {
 
+    private readonly UserValidation userValidation;
+
+    public UserInterface(UserValidation userValidation) {
+        this.userValidation = userValidation;
+    }
     public void DisplayMenu() {
         Console.WriteLine("Please select and option:");
         Console.WriteLine("1: Add Coding Time");
@@ -13,7 +19,7 @@ public class UserInterface {
         Console.WriteLine("4: Get A Coding Time");
         Console.WriteLine("5: Get All Coding Times");
         Console.WriteLine("6: Exit");
-        
+
 
 
     }
@@ -22,13 +28,13 @@ public class UserInterface {
         int choice;
         while (!int.TryParse(Console.ReadLine(), out choice)) {
             Console.WriteLine("Invalid input. Please enter a valid number.");
-            Console.Write("Enter your choice");
+            Console.WriteLine("Enter your choice");
 
         }
         return choice;
     }
 
-    
+
     public void DisplayMessage(string message) {
         Console.WriteLine(message);
     }
@@ -38,9 +44,9 @@ public class UserInterface {
 
     public DateTime GetCodingTime(DateTime dateTime) {
         DateTime codingTimes;
-        
+
         Console.WriteLine("\n\nPlease insert the time: (Format: H:mm:ss). Type 0 to return to main manu.\n\n");
-       
+
 
         string dates = Console.ReadLine();
         if (dates == "0") DisplayMenu();
@@ -49,17 +55,17 @@ public class UserInterface {
             dates = Console.ReadLine();
 
         }
-        
+
         DateTime actualTime = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, codingTimes.Hour, codingTimes.Minute, codingTimes.Second);
 
         Console.WriteLine(actualTime.Day);
         Console.WriteLine(actualTime.Minute);
         return actualTime;
-        
+
 
     }
 
-    public DateTime GetDateInput() {
+    internal DateTime GetDateInput() {
         DateTime dateTime;
         Console.WriteLine("\n\nPlease insert the date: (Format: dd/mm/yy). Type 0 to return to main manu.\n\n");
 
@@ -76,10 +82,34 @@ public class UserInterface {
     }
 
     internal void DisplayCodingTimes(List<CodingTracker> codingTimes) {
-        Console.Clear();
-        foreach (var codingTracker in codingTimes) {
-            Console.WriteLine(codingTracker.codingHours);
-        }
+        
+        ConsoleTableBuilder
+            .From(codingTimes)
+            .ExportAndWriteLine();
+
+    }
+    internal int GetSingleCodingTime(string action) {
+        Console.WriteLine($"Please type the id of the coding time you would like to {action}");
+        
+        int id = userValidation.ParseId();
+        
+
+        
+        return id;
+    }
+    internal void DisplaySingleCodingTime(CodingTracker codingTime) {
+        var codingTimeList = new List<CodingTracker>() { codingTime };
+        ConsoleTableBuilder
+           .From(codingTimeList)
+           .ExportAndWriteLine();
+
+        
+
+    }
+    internal void PressToContinue() {
+        Console.WriteLine("Please press any key to continue");
+        Console.ReadKey();
     }
 }
-//after your break make it to where you only do GetDateInput() once, call GetDateInput in the controller pass the DateTime variable into the GetCodingTime() and set the day into the DateTime object in there
+
+    

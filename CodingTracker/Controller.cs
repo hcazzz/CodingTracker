@@ -2,15 +2,23 @@
 internal class Controller {
     private readonly UserInterface userInterface;
     private readonly CodingTrackerRepository codingTrackerRepository;
+    private readonly UserValidation userValidation;
 
-    public Controller(UserInterface userInterface, CodingTrackerRepository codingTrackerRepository) {
+    public Controller(UserInterface userInterface, CodingTrackerRepository codingTrackerRepository, UserValidation userValidation) {
         this.userInterface = userInterface;
         this.codingTrackerRepository = codingTrackerRepository;
+        this.userValidation = userValidation;
     }
     public void Run() {
-        userInterface.DisplayMenu();
-        int choice = userInterface.GetUserChoice();
-        ProcessUserChoice(choice);
+        bool IsActive = true;
+
+        while (IsActive) {
+            
+            userInterface.ClearScreen();
+            userInterface.DisplayMenu();
+            int choice = userInterface.GetUserChoice();
+            ProcessUserChoice(choice);
+        }
     }
     public void ProcessUserChoice(int choice) {
         switch (choice) {
@@ -20,56 +28,104 @@ internal class Controller {
 
                 var codingTracker = GetUserCodingTimes();
                 AddCodingTracker(codingTracker);
+                userInterface.PressToContinue();
 
                 break;
             case 2:
                 UpdateCodingTime();
-                userInterface.ClearScreen();
+                
+                userInterface.PressToContinue();
                 break;
             case 3:
+                
                 DeleteCodingTime();
+                
+                userInterface.PressToContinue();
                 userInterface.ClearScreen();
                 break;
             case 4:
                 GetCodingTime();
+                
+                userInterface.PressToContinue();
                 userInterface.ClearScreen();
                 break;
 
             case 5:
-                var codingTimes = codingTrackerRepository.GetAllCodingTimes();
-                userInterface.DisplayCodingTimes(codingTimes);
+                DisplayAllCodingTimes();
+                userInterface.PressToContinue();
+                userInterface.ClearScreen();
                 break;
             case 6:
                 userInterface.DisplayMessage("Exiting the application. Goodbye!");
-                //Environment.Exit(0);
+                Environment.Exit(0);
                 break;
             default:
                 userInterface.DisplayMessage("Invalid choice. Please try again.");
-                userInterface.GetUserChoice();
+                choice = userInterface.GetUserChoice();
+                ProcessUserChoice(choice);
+
                 break;
         }
     }
 
     private void GetCodingTime() {
-        throw new NotImplementedException();
+        string actionToDo = "get";
+        DisplayAllCodingTimes();
+
+        var singleCodingTimeId = userInterface.GetSingleCodingTime(actionToDo);
+        var codingTracker = codingTrackerRepository.GetCodingTimeById(singleCodingTimeId);
+        userInterface.DisplaySingleCodingTime(codingTracker);
+        
+    }
+    private void DisplayAllCodingTimes() {
+        var codingTimesList = codingTrackerRepository.GetAllCodingTimes();
+        userInterface.DisplayCodingTimes(codingTimesList);
     }
 
     private void DeleteCodingTime() {
-        throw new NotImplementedException();
+        string actionToDo = "delete";
+
+        var codingTracker = ValidIdLoop(actionToDo);
+        codingTrackerRepository.DeleteCodingTime(codingTracker);
+
+    }
+    public CodingTracker ValidIdLoop(String actionToDo) {
+        bool validId = false;
+        DisplayAllCodingTimes();
+        var singleCodingTimeId = userInterface.GetSingleCodingTime(actionToDo);
+        var codingTracker = codingTrackerRepository.GetCodingTimeById(singleCodingTimeId);
+        validId = userValidation.IdExists(codingTracker);
+        Console.WriteLine(validId);
+
+        if (!validId) {
+            Console.Clear();
+            Console.WriteLine("this is running regardless");
+            Console.WriteLine(validId);
+            return ValidIdLoop(actionToDo);
+            
+        }
+        else {
+            return codingTracker;
+        }
     }
 
     private void UpdateCodingTime() {
-        throw new NotImplementedException();
+        string actionToDo = "update";
+        DisplayAllCodingTimes();
+        var singleCodingTimeId = userInterface.GetSingleCodingTime(actionToDo);
+        var codingTracker = codingTrackerRepository.GetCodingTimeById(singleCodingTimeId);
+        var updatedCodingTracker = GetUserCodingTimes();
+        codingTrackerRepository.UpdateCodingTime(codingTracker, updatedCodingTracker);
     }
-    public DateTime GetDate() {
+    public DateTime GetDateForCodingTime() {
         DateTime dateTime;
         dateTime = userInterface.GetDateInput();
-        DateTime temp = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
+        DateTime temp = new(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
         return temp;
     }
     
     public CodingTracker GetUserCodingTimes() {
-        DateTime dateTime = GetDate();
+        DateTime dateTime = GetDateForCodingTime();
         userInterface.DisplayMessage("Enter your start time");
         var startTime = userInterface.GetCodingTime(dateTime);
         userInterface.DisplayMessage("Enter your end time");
@@ -94,9 +150,9 @@ internal class Controller {
         return codingTracker;
 
 
-
     }
     private void AddCodingTracker(CodingTracker codingTracker) {
         codingTrackerRepository.AddCodingTime(codingTracker);
     }
 }
+
