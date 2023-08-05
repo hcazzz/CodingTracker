@@ -70,10 +70,7 @@ internal class Controller {
 
     private void GetCodingTime() {
         string actionToDo = "get";
-        DisplayAllCodingTimes();
-
-        var singleCodingTimeId = userInterface.GetSingleCodingTime(actionToDo);
-        var codingTracker = codingTrackerRepository.GetCodingTimeById(singleCodingTimeId);
+        var codingTracker = ValidIdLoop(actionToDo);
         userInterface.DisplaySingleCodingTime(codingTracker);
         
     }
@@ -99,9 +96,10 @@ internal class Controller {
 
         if (!validId) {
             Console.Clear();
-            Console.WriteLine("this is running regardless");
-            Console.WriteLine(validId);
+            Console.WriteLine("Please type try again and enter a valid id.");
+            
             return ValidIdLoop(actionToDo);
+
             
         }
         else {
@@ -111,9 +109,7 @@ internal class Controller {
 
     private void UpdateCodingTime() {
         string actionToDo = "update";
-        DisplayAllCodingTimes();
-        var singleCodingTimeId = userInterface.GetSingleCodingTime(actionToDo);
-        var codingTracker = codingTrackerRepository.GetCodingTimeById(singleCodingTimeId);
+        var codingTracker = ValidIdLoop(actionToDo);
         var updatedCodingTracker = GetUserCodingTimes();
         codingTrackerRepository.UpdateCodingTime(codingTracker, updatedCodingTracker);
     }
