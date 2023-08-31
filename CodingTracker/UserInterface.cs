@@ -19,7 +19,7 @@ internal class UserInterface {
         Console.WriteLine("4: Get A Coding Time");
         Console.WriteLine("5: Get All Coding Times");
         Console.WriteLine("6: Exit");
-
+        
 
 
     }
@@ -49,17 +49,20 @@ internal class UserInterface {
 
 
         string dates = Console.ReadLine();
-        if (dates == "0") DisplayMenu();
+        if (dates == "0") return default;
         while (!DateTime.TryParseExact(dates, "H:mm:ss", new CultureInfo("en-US"), DateTimeStyles.None, out codingTimes)) {
-            Console.WriteLine("Invalid Time (Format: hours:minutes:seconds: \n");
+            Console.WriteLine("Invalid Time (Format: hours:minutes:seconds: Type 0 to return to main menu or try again: \n\n");
             dates = Console.ReadLine();
-
+            if (dates == "0") {
+                
+                return default;
+            }
+   
         }
-
+   
         DateTime actualTime = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, codingTimes.Hour, codingTimes.Minute, codingTimes.Second);
 
-        Console.WriteLine(actualTime.Day);
-        Console.WriteLine(actualTime.Minute);
+        
         return actualTime;
 
 
@@ -71,12 +74,22 @@ internal class UserInterface {
 
         string dateInput = Console.ReadLine();
 
-        if (dateInput == "0") DisplayMenu();
+        if (dateInput == "0") return default;
 
         while (!DateTime.TryParseExact(dateInput, "dd/MM/yy", new CultureInfo("en-US"), DateTimeStyles.None, out dateTime)) {
-            Console.WriteLine("\n\nInvalid date. (Format: dd-mm-yy). Type 0 to return to main manu or try again:\n\n");
+            Console.WriteLine("\n\nInvalid date. (Format: dd/mm/yy). Type 0 to return to main menu or try again:\n\n");
             dateInput = Console.ReadLine();
+            if (dateInput == "0") {
+                
+                return default;
+                
+            }
+                
         }
+
+    
+
+    
 
         return dateTime;
     }
@@ -102,7 +115,7 @@ internal class UserInterface {
         ConsoleTableBuilder
            .From(codingTimeList)
            .ExportAndWriteLine();
-
+        
         
 
     }

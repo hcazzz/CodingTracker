@@ -1,4 +1,6 @@
-﻿namespace CodingTracker;
+﻿using System;
+
+namespace CodingTracker;
 internal class Controller {
     private readonly UserInterface userInterface;
     private readonly CodingTrackerRepository codingTrackerRepository;
@@ -71,7 +73,9 @@ internal class Controller {
     private void GetCodingTime() {
         string actionToDo = "get";
         var codingTracker = ValidIdLoop(actionToDo);
+
         userInterface.DisplaySingleCodingTime(codingTracker);
+
         
     }
     private void DisplayAllCodingTimes() {
@@ -116,6 +120,7 @@ internal class Controller {
     public DateTime GetDateForCodingTime() {
         DateTime dateTime;
         dateTime = userInterface.GetDateInput();
+        CheckDefault(dateTime);
         DateTime temp = new(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
         return temp;
     }
@@ -123,10 +128,13 @@ internal class Controller {
     public CodingTracker GetUserCodingTimes() {
         DateTime dateTime = GetDateForCodingTime();
         userInterface.DisplayMessage("Enter your start time");
+        
         var startTime = userInterface.GetCodingTime(dateTime);
+        CheckDefault(startTime);
         userInterface.DisplayMessage("Enter your end time");
-        var endTime = userInterface.GetCodingTime(dateTime);
 
+        var endTime = userInterface.GetCodingTime(dateTime);
+        CheckDefault(endTime);
         var codingTracker = CreateCodingTracker(startTime, endTime);
 
         return codingTracker;
@@ -149,6 +157,13 @@ internal class Controller {
     }
     private void AddCodingTracker(CodingTracker codingTracker) {
         codingTrackerRepository.AddCodingTime(codingTracker);
+ 
+    }
+
+    private void CheckDefault(DateTime dateTime) {
+        if (dateTime == default) {
+            Run();
+        }
     }
 }
 

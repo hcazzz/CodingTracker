@@ -2,7 +2,7 @@
 internal class CodingTrackerRepository {
     private readonly CodingTrackerContext _context;
 
-     internal CodingTrackerRepository(CodingTrackerContext context) {
+     public CodingTrackerRepository(CodingTrackerContext context) {
         _context = context;
     }
     public void AddCodingTime(CodingTracker codingTracker) {
